@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-primary text-white py-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="mb-1 h3 fw-bold">{{ curso.nombre }}</h2>
+                            <p class="mb-0 opacity-75"><i class="bi bi-person-badge me-2"></i>Profesor: {{ curso.profesor }}</p>
+                        </div>
+                        <span class="badge bg-white text-primary rounded-pill px-3 py-2 fs-6 shadow-sm">ID: #{{ curso.id }}</span>
+                    </div>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    <div class="mb-5">
+                        <h5 class="text-uppercase text-muted fw-bold small mb-3" style="letter-spacing: 1px;">Descripción del curso</h5>
+                        <p class="text-dark fs-5" style="line-height: 1.7;">
+                            {{ curso.descripcion }}
+                        </p>
+                    </div>
+                    
+                    <hr class="my-4 opacity-25">
+                    
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
+                        <div>
+                            <h5 class="mb-1"><i class="bi bi-folder2-open text-primary me-2"></i>Material Académico</h5>
+                            <p class="text-muted small mb-0">Descarga el contenido programático en formato PDF.</p>
+                        </div>
+                        
+                        {% if curso.archivo_temario %}
+                            <a href="{{ curso.archivo_temario.url }}" class="btn btn-success btn-lg px-4 shadow-sm" target="_blank">
+                                <i class="bi bi-file-earmark-arrow-down-fill me-2"></i>Descargar Temario
+                            </a>
+                        {% else %}
+                            <span class="badge bg-light text-secondary border p-3 rounded-3">
+                                <i class="bi bi-info-circle me-2"></i>Temario no disponible aún
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="bg-light rounded-4 p-4 shadow-sm border">
+                        <h5 class="mb-4 d-flex justify-content-between align-items-center">
+                            <span class="fw-bold"><i class="bi bi-people-fill me-2 text-primary"></i>Alumnos e Inscripciones</span>
+                            <span class="badge bg-primary rounded-pill">{{ curso.inscripcion_set.count }} alumnos</span>
+                        </h5>
+                        
+                        <div class="list-group list-group-flush rounded-3 bg-white border shadow-sm">
+                            {% for inscripcion in curso.inscripcion_set.all %}
+                                <div class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-primary-subtle text-primary rounded-circle me-3 fw-bold" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                            {{ inscripcion.alumno.nombre|first }}
+                                        </div>
+                                        <div>
+                                            <span class="fw-bold text-dark d-block">{{ inscripcion.alumno.nombre }} {{ inscripcion.alumno.apellido }}</span>
+                                            <small class="text-muted"><i class="bi bi-envelope me-1"></i>{{ inscripcion.alumno.email }}</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="ms-3">
+                                        <span class="badge {% if inscripcion.nota >= 7 %}bg-success{% elif inscripcion.nota >= 4 %}bg-warning text-dark{% else %}bg-danger{% endif %} rounded-pill px-3 py-2 fs-6">
+                                            Nota: {{ inscripcion.nota }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <div class="list-group-item text-center py-5 text-muted">
+                                    <i class="bi bi-emoji-neutral mb-3 d-block fs-1 opacity-25"></i>
+                                    No hay alumnos inscritos en este curso todavía.
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-column flex-md-row gap-3 justify-content-between mt-5 border-top pt-4">
+                        <a href="{% url 'home' %}" class="btn btn-outline-secondary px-4 py-2">
+                            <i class="bi bi-arrow-left me-2"></i>Regresar al Dashboard
+                        </a>
+                        <a href="{% url 'exportar_pdf' curso.id %}" class="btn btn-danger px-4 py-2 shadow-sm">
+                            <i class="bi bi-file-pdf-fill me-2"></i>Exportar Lista de Asistencia
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Estilos personalizados para mejorar la visualización */
+    .bg-primary-subtle {
+        background-color: #e7f1ff;
+    }
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .list-group-item:hover {
+        background-color: #fbfbfb;
+    }
+</style>
+{% endblock %}

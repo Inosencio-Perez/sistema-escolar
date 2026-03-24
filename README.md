@@ -43,6 +43,12 @@ SISTEMA_ESCOLAR/              # Carpeta raíz del proyecto
 └── README.md                 # Documentación del proyecto (este archivo)
 ```
 
+## 📈 Escalabilidad y Visión de Futuro
+
+El sistema ha sido diseñado bajo una arquitectura modular que permite un crecimiento sostenible:
+
+* **Multitenencia (SaaS ready):** Gracias a su motor de "Marca Blanca", el sistema puede adaptarse a diferentes instituciones con un solo despliegue, permitiendo personalizar la identidad visual de cada cliente.
+* **Optimización de Consultas:** Uso de relaciones ForeignKey y optimización de base de datos MySQL para manejar grandes volúmenes de inscripciones y registros académicos sin pérdida de rendimiento.
 
 ## 📦 Instalación y Configuración
 

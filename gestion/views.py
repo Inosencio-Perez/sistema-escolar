@@ -1,68 +1,64 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
-from django.db.models import Q, Count, Avg
-from .models import Curso, Alumno 
+from django.template.loader import get_template
+from .models import Alumno, Profesor, Curso
 
-# Importaciones para el PDF
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
+# Intentamos importar xhtml2pdf para el reporte
+try:
+    from xhtml2pdf import pisa
+except ImportError:
+    pisa = None
 
+# --- DASHBOARD PRINCIPAL ---
 def home(request):
-    busqueda = request.GET.get('buscar')
+    cursos_activos = Curso.objects.count()
+    total_inscripciones = Alumno.objects.filter(cursos__isnull=False).count()
     
-    # Lógica de búsqueda
-    if busqueda:
-        cursos = Curso.objects.filter(
-            Q(nombre__icontains=busqueda) | Q(descripcion__icontains=busqueda)
-        ).distinct()
-    else:
-        cursos = Curso.objects.all()
+    promedio_inscriptos = total_inscripciones / cursos_activos if cursos_activos > 0 else 0
 
-    # --- CÁLCULO DE ESTADÍSTICAS CORREGIDO (POR INSCRIPCIONES) ---
-    total_cursos = Curso.objects.count()
-    
-    # Sumamos la cantidad de alumnos que tiene cada curso individualmente
-    # Esto nos da el total de "asientos ocupados" (3 + 2 = 5)
-    total_inscripciones = 0
-    for curso in Curso.objects.all():
-        total_inscripciones += curso.alumnos.count()
-    
-    # Calculamos el promedio basado en inscripciones reales
-    if total_cursos > 0:
-        promedio_alumnos = total_inscripciones / total_cursos
-    else:
-        promedio_alumnos = 0
+    # Obtenemos los últimos cursos para las tarjetas
+    ultimos_cursos = Curso.objects.all().order_by('-id')[:6]
 
     context = {
-        'cursos': cursos,
-        'busqueda': busqueda,
-        'stats': {
-            'total_cursos': total_cursos,
-            'total_alumnos': total_inscripciones, # Ahora muestra 5
-            'promedio': round(float(promedio_alumnos), 1)
-        }
+        'cursos_activos': cursos_activos,
+        'total_inscripciones': total_inscripciones,
+        'promedio_inscriptos': round(promedio_inscriptos, 1),
+        'cursos': ultimos_cursos,
     }
     return render(request, 'gestion/home.html', context)
 
+# --- VISTAS DE LISTADOS ---
+def lista_alumnos(request):
+    alumnos = Alumno.objects.all().order_by('apellido')
+    return render(request, 'gestion/lista_alumnos.html', {'alumnos': alumnos})
+
+def lista_profesores(request):
+    profesores = Profesor.objects.all().order_by('apellido')
+    return render(request, 'gestion/lista_profesores.html', {'profesores': profesores})
+
+def lista_cursos(request):
+    cursos = Curso.objects.all().order_by('nombre')
+    return render(request, 'gestion/lista_cursos.html', {'cursos': cursos})
+
+# --- DETALLES Y PDF ---
 def detalle_curso(request, curso_id):
-    curso = get_object_or_404(Curso, pk=curso_id)
-    return render(request, 'gestion/detalle_curso.html', {'curso': curso})
+    curso = get_object_or_404(Curso, id=curso_id)
+    alumnos_inscritos = Alumno.objects.filter(cursos=curso).order_by('apellido')
+    return render(request, 'gestion/detalle_curso.html', {
+        'curso': curso,
+        'alumnos': alumnos_inscritos,
+        'total_inscriptos': alumnos_inscritos.count(),
+    })
 
 def exportar_alumnos_pdf(request, curso_id):
-    curso = get_object_or_404(Curso, pk=curso_id)
+    curso = get_object_or_404(Curso, id=curso_id)
+    alumnos = Alumno.objects.filter(cursos=curso).order_by('apellido')
+    template_path = 'gestion/exportar_pdf.html'
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="alumnos_{curso.nombre}.pdf"'
-
-    p = canvas.Canvas(response, pagesize=letter)
-    p.setFont("Helvetica-Bold", 16)
-    p.drawString(100, 750, f"Lista de Alumnos: {curso.nombre}")
-    
-    p.setFont("Helvetica", 12)
-    y = 720
-    for alumno in curso.alumnos.all():
-        p.drawString(100, y, f"- {alumno.nombre} {alumno.apellido} ({alumno.email})")
-        y -= 20
-    
-    p.showPage()
-    p.save()
-    return response
+    response['Content-Disposition'] = f'attachment; filename="lista_{curso.nombre}.pdf"'
+    template = get_template(template_path)
+    html = template.render({'curso': curso, 'alumnos': alumnos})
+    if pisa:
+        pisa_status = pisa.CreatePDF(html, dest=response)
+        return response if not pisa_status.err else HttpResponse('Error', status=500)
+    return HttpResponse('Instala xhtml2pdf')

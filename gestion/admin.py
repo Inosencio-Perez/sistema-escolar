@@ -1,38 +1,40 @@
 from django.contrib import admin
-from .models import Curso, Alumno, Inscripcion, ConfiguracionEscuela
+from .models import Alumno, Profesor, Curso, ConfiguracionEscuela
 
-# --- ESTO ES LO NUEVO PARA LA CONFIGURACIÓN ---
+# --- CONFIGURACIÓN DE LA ESCUELA ---
 @admin.register(ConfiguracionEscuela)
 class ConfiguracionEscuelaAdmin(admin.ModelAdmin):
-    # Esto evita que se creen múltiples registros accidentalmente
+    list_display = ('nombre', 'email', 'telefono')
+    
+    # Esto evita que se creen múltiples configuraciones
     def has_add_permission(self, request):
         if ConfiguracionEscuela.objects.exists():
             return False
         return True
 
-    # Esto evita que se pueda borrar la configuración una vez creada
+    # Esto evita que se borre la configuración accidentalmente
     def has_delete_permission(self, request, obj=None):
         return False
 
-    list_display = ('nombre_escuela', 'eslogan')
+# --- PROFESORES ---
+@admin.register(Profesor)
+class ProfesorAdmin(admin.ModelAdmin):
+    list_display = ('apellido', 'nombre', 'dni', 'especialidad', 'email')
+    search_fields = ('apellido', 'nombre', 'dni', 'especialidad')
+    list_filter = ('especialidad',)
+    ordering = ('apellido',)
 
-# --- TUS REGISTROS ANTERIORES (MANTENLOS IGUAL) ---
-class InscripcionInline(admin.TabularInline):
-    model = Inscripcion
-    extra = 1
-
-@admin.register(Curso)
-class CursoAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'profesor', 'archivo_temario')
-    search_fields = ('nombre', 'profesor')
-
+# --- ALUMNOS ---
 @admin.register(Alumno)
 class AlumnoAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'apellido', 'email')
-    search_fields = ('nombre', 'apellido', 'email')
-    inlines = [InscripcionInline]
+    list_display = ('apellido', 'nombre', 'dni', 'email')
+    search_fields = ('apellido', 'nombre', 'dni')
+    filter_horizontal = ('cursos',) # Esto hace que asignar cursos sea mucho más fácil (interfaz de dos columnas)
+    ordering = ('apellido',)
 
-@admin.register(Inscripcion)
-class InscripcionAdmin(admin.ModelAdmin):
-    list_display = ('alumno', 'curso', 'nota', 'fecha_inscripcion')
-    list_filter = ('curso', 'fecha_inscripcion')
+# --- CURSOS ---
+@admin.register(Curso)
+class CursoAdmin(admin.ModelAdmin):
+    list_display = ('nombre', 'profesor')
+    search_fields = ('nombre',)
+    list_filter = ('profesor',)

@@ -1,105 +1,103 @@
 {% extends 'base.html' %}
 
+{% block title %}Detalle de {{ curso.nombre }}{% endblock %}
+
 {% block content %}
-<div class="container mt-5 mb-5">
+<div class="container">
+    <div class="row mb-4 align-items-center">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold text-dark">
+                <i class="fas fa-book-open text-primary me-2"></i>{{ curso.nombre }}
+            </h1>
+            <p class="lead text-muted">
+                Profesor a cargo: <strong>{{ curso.profesor.nombre }} {{ curso.profesor.apellido }}</strong>
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-arrow-left me-1"></i> Volver
+            </a>
+            <a href="{% url 'exportar_alumnos_pdf' curso.id %}" class="btn btn-danger">
+                <i class="fas fa-file-pdf me-1"></i> Exportar PDF
+            </a>
+        </div>
+    </div>
+
     <div class="row">
-        <div class="col-lg-8 mx-auto">
-            <div class="card shadow border-0 rounded-4 overflow-hidden">
-                <div class="card-header bg-primary text-white py-4">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h2 class="mb-1 h3 fw-bold">{{ curso.nombre }}</h2>
-                            <p class="mb-0 opacity-75"><i class="bi bi-person-badge me-2"></i>Profesor: {{ curso.profesor }}</p>
-                        </div>
-                        <span class="badge bg-white text-primary rounded-pill px-3 py-2 fs-6 shadow-sm">ID: #{{ curso.id }}</span>
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body text-center py-4">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-users fa-2x"></i>
                     </div>
+                    <h3 class="fw-bold">{{ total_inscriptos|default:alumnos.count }}</h3>
+                    <p class="text-muted mb-0">Alumnos Inscriptos</p>
                 </div>
-                
-                <div class="card-body p-4 p-md-5">
-                    <div class="mb-5">
-                        <h5 class="text-uppercase text-muted fw-bold small mb-3" style="letter-spacing: 1px;">Descripción del curso</h5>
-                        <p class="text-dark fs-5" style="line-height: 1.7;">
-                            {{ curso.descripcion }}
-                        </p>
-                    </div>
-                    
-                    <hr class="my-4 opacity-25">
-                    
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
-                        <div>
-                            <h5 class="mb-1"><i class="bi bi-folder2-open text-primary me-2"></i>Material Académico</h5>
-                            <p class="text-muted small mb-0">Descarga el contenido programático en formato PDF.</p>
-                        </div>
-                        
-                        {% if curso.archivo_temario %}
-                            <a href="{{ curso.archivo_temario.url }}" class="btn btn-success btn-lg px-4 shadow-sm" target="_blank">
-                                <i class="bi bi-file-earmark-arrow-down-fill me-2"></i>Descargar Temario
-                            </a>
-                        {% else %}
-                            <span class="badge bg-light text-secondary border p-3 rounded-3">
-                                <i class="bi bi-info-circle me-2"></i>Temario no disponible aún
-                            </span>
-                        {% endif %}
-                    </div>
+            </div>
 
-                    <div class="bg-light rounded-4 p-4 shadow-sm border">
-                        <h5 class="mb-4 d-flex justify-content-between align-items-center">
-                            <span class="fw-bold"><i class="bi bi-people-fill me-2 text-primary"></i>Alumnos e Inscripciones</span>
-                            <span class="badge bg-primary rounded-pill">{{ curso.inscripcion_set.count }} alumnos</span>
-                        </h5>
-                        
-                        <div class="list-group list-group-flush rounded-3 bg-white border shadow-sm">
-                            {% for inscripcion in curso.inscripcion_set.all %}
-                                <div class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom">
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-primary-subtle text-primary rounded-circle me-3 fw-bold" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                            {{ inscripcion.alumno.nombre|first }}
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white fw-bold">
+                    <i class="fas fa-info-circle me-2"></i>Información Adicional
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Especialidad Prof.
+                        <span class="badge bg-light text-dark border">{{ curso.profesor.especialidad }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        ID del Curso
+                        <span class="text-muted">#{{ curso.id }}</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+                    <h5 class="mb-0 fw-bold">Lista de Estudiantes</h5>
+                    <span class="badge bg-info text-white">{{ alumnos|length }} Registrados</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Apellido y Nombre</th>
+                                    <th>DNI</th>
+                                    <th>Email</th>
+                                    <th class="text-center">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for alumno in alumnos %}
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="fw-bold">{{ alumno.apellido }}, {{ alumno.nombre }}</div>
+                                    </td>
+                                    <td>{{ alumno.dni }}</td>
+                                    <td><small class="text-muted">{{ alumno.email }}</small></td>
+                                    <td class="text-center">
+                                        <span class="badge rounded-pill bg-success-subtle text-success border border-success-subtle px-3">Regular</span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-5">
+                                        <div class="text-muted">
+                                            <i class="fas fa-user-slash fa-3x mb-3 d-block"></i>
+                                            <p class="mb-0">No hay alumnos inscritos en este curso todavía.</p>
+                                            <small>Puedes inscribirlos desde el Panel de Administración.</small>
                                         </div>
-                                        <div>
-                                            <span class="fw-bold text-dark d-block">{{ inscripcion.alumno.nombre }} {{ inscripcion.alumno.apellido }}</span>
-                                            <small class="text-muted"><i class="bi bi-envelope me-1"></i>{{ inscripcion.alumno.email }}</small>
-                                        </div>
-                                    </div>
-
-                                    <div class="ms-3">
-                                        <span class="badge {% if inscripcion.nota >= 7 %}bg-success{% elif inscripcion.nota >= 4 %}bg-warning text-dark{% else %}bg-danger{% endif %} rounded-pill px-3 py-2 fs-6">
-                                            Nota: {{ inscripcion.nota }}
-                                        </span>
-                                    </div>
-                                </div>
-                            {% empty %}
-                                <div class="list-group-item text-center py-5 text-muted">
-                                    <i class="bi bi-emoji-neutral mb-3 d-block fs-1 opacity-25"></i>
-                                    No hay alumnos inscritos en este curso todavía.
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="d-flex flex-column flex-md-row gap-3 justify-content-between mt-5 border-top pt-4">
-                        <a href="{% url 'home' %}" class="btn btn-outline-secondary px-4 py-2">
-                            <i class="bi bi-arrow-left me-2"></i>Regresar al Dashboard
-                        </a>
-                        <a href="{% url 'exportar_pdf' curso.id %}" class="btn btn-danger px-4 py-2 shadow-sm">
-                            <i class="bi bi-file-pdf-fill me-2"></i>Exportar Lista de Asistencia
-                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<style>
-    /* Estilos personalizados para mejorar la visualización */
-    .bg-primary-subtle {
-        background-color: #e7f1ff;
-    }
-    .card {
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .list-group-item:hover {
-        background-color: #fbfbfb;
-    }
-</style>
 {% endblock %}

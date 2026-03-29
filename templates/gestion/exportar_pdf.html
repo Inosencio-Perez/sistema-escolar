@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #0d6efd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .school-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .course-info {
+            margin-bottom: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: left;
+            font-size: 12px;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 11px;
+        }
+        .footer {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 9px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="school-name">Instituto Nueva Alianza</div>
+        <div>Reporte de Asistencia y Alumnos</div>
+    </div>
+
+    <div class="course-info">
+        <h2>Curso: {{ curso.nombre }}</h2>
+        <p><strong>Profesor:</strong> {{ curso.profesor.nombre }} {{ curso.profesor.apellido }}</p>
+        <p><strong>Fecha del reporte:</strong> 27 de Marzo, 2026</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Apellido y Nombre</th>
+                <th>DNI</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alumno in alumnos %}
+            <tr>
+                <td>{{ alumno.apellido }}, {{ alumno.nombre }}</td>
+                <td>{{ alumno.dni }}</td>
+                <td>{{ alumno.email }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        © 2026 Sistema de Gestión Escolar - Generado automáticamente por Ino.
+    </div>
+</body>
+</html>

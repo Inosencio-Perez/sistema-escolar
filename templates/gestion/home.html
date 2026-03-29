@@ -1,123 +1,103 @@
 {% extends 'base.html' %}
 
+{% block title %}Dashboard Principal{% endblock %}
+
 {% block content %}
-<div class="container mt-4">
-    <div class="row mb-4">
-        <div class="col-md-4 mb-3">
-            <div class="card border-0 shadow-sm bg-primary text-white h-100">
-                <div class="card-body d-flex align-items-center justify-content-between">
-                    <div>
-                        <h6 class="text-uppercase mb-1 opacity-75">Cursos Activos</h6>
-                        <h2 class="fw-bold mb-0">{{ stats.total_cursos }}</h2>
+<div class="container-fluid px-4 py-4">
+    <div class="mb-4">
+        <h1 class="fw-bold mb-0">Dashboard Principal</h1>
+        <p class="text-muted">Resumen estadístico y gestión de cursos</p>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card bg-primary text-white shadow border-0">
+                <div class="card-body py-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small fw-bold text-uppercase opacity-75">Cursos Activos</div>
+                            <div class="display-5 fw-bold">{{ cursos_activos|default:"0" }}</div>
+                        </div>
+                        <i class="fas fa-graduation-cap fa-3x opacity-25"></i>
                     </div>
-                    <i class="bi bi-journal-bookmark-fill fs-1 opacity-50"></i>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-3">
-            <div class="card border-0 shadow-sm bg-success text-white h-100">
-                <div class="card-body d-flex align-items-center justify-content-between">
-                    <div>
-                        <h6 class="text-uppercase mb-1 opacity-75">Total de Inscripciones</h6>
-                        <h2 class="fw-bold mb-0">{{ stats.total_alumnos }}</h2>
+
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card bg-success text-white shadow border-0">
+                <div class="card-body py-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small fw-bold text-uppercase opacity-75">Total Inscripciones</div>
+                            <div class="display-5 fw-bold">{{ total_inscripciones|default:"0" }}</div>
+                        </div>
+                        <i class="fas fa-user-check fa-3x opacity-25"></i>
                     </div>
-                    <i class="bi bi-people-fill fs-1 opacity-50"></i>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-3">
-            <div class="card border-0 shadow-sm bg-info text-white h-100">
-                <div class="card-body d-flex align-items-center justify-content-between">
-                    <div>
-                        <h6 class="text-uppercase mb-1 opacity-75">Promedio de Inscritos por Curso</h6>
-                        <h2 class="fw-bold mb-0">{{ stats.promedio }}</h2>
+
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card bg-info text-white shadow border-0">
+                <div class="card-body py-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="small fw-bold text-uppercase opacity-75">Promedio x Curso</div>
+                            <div class="display-5 fw-bold">{{ promedio_inscriptos|default:"0" }}</div>
+                        </div>
+                        <i class="fas fa-chart-line fa-3x opacity-25"></i>
                     </div>
-                    <i class="bi bi-graph-up-arrow fs-1 opacity-50"></i>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row mb-5 justify-content-center">
-        <div class="col-md-8">
-            <form method="GET" action="{% url 'home' %}" class="d-flex shadow-sm p-1 bg-white rounded-pill border">
-                <input 
-                    name="buscar" 
-                    class="form-control border-0 rounded-pill ps-4" 
-                    type="search" 
-                    placeholder="Buscar por nombre de curso o descripción..." 
-                    aria-label="Buscar"
-                    value="{{ busqueda|default:'' }}"
-                >
-                <button class="btn btn-primary rounded-pill px-4 mx-1" type="submit">
-                    <i class="bi bi-search"></i> Buscar
-                </button>
-            </form>
-            
-            {% if busqueda %}
-                <div class="text-center mt-3">
-                    <span class="badge bg-light text-dark border p-2">
-                        Resultados para: <strong>"{{ busqueda }}"</strong>
-                        <a href="{% url 'home' %}" class="ms-2 text-danger text-decoration-none">
-                            <i class="bi bi-x-circle-fill"></i> Limpiar filtro
-                        </a>
-                    </span>
-                </div>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="row justify-content-center">
+    <h4 class="fw-bold mb-4">
+        <i class="fas fa-th-large me-2 text-primary"></i>Nuestros Cursos
+    </h4>
+    
+    <div class="row">
         {% for curso in cursos %}
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card h-100 shadow-sm border-0 border-top border-primary border-4 transition-hover">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card h-100 shadow-sm border-0 border-top border-primary border-4 card-custom">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h5 class="card-title text-primary fw-bold mb-0">{{ curso.nombre }}</h5>
-                        <i class="bi bi-bookmark-star text-warning"></i>
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h5 class="card-title fw-bold text-dark mb-0">{{ curso.nombre }}</h5>
+                        <span class="badge bg-light text-primary border border-primary-subtle" style="font-size: 0.7rem;">Activo</span>
                     </div>
-                    <p class="card-text text-secondary small">
-                        {{ curso.descripcion|truncatechars:120 }}
+                    
+                    <p class="text-muted small mb-3">
+                        <i class="fas fa-user-tie me-2 text-secondary"></i>
+                        <strong>Profesor:</strong> {{ curso.profesor.nombre }} {{ curso.profesor.apellido }}
                     </p>
-                    <hr class="text-light">
-                    <div class="mb-3">
-                        <p class="small mb-1">
-                            <i class="bi bi-person-workspace me-2 text-primary"></i>
-                            <strong>Profesor:</strong> {{ curso.profesor }}
-                        </p>
-                        <p class="small mb-0">
-                            <i class="bi bi-people me-2 text-primary"></i>
-                            <strong>Inscritos:</strong> {{ curso.alumnos.count }} alumnos
-                        </p>
+                    
+                    <div class="d-flex align-items-center p-2 bg-light rounded mb-3">
+                        <i class="fas fa-users text-primary me-2"></i>
+                        <span class="small text-dark">
+                            <strong>Alumnos:</strong> {{ curso.alumnos.count|default:"0" }} registrados
+                        </span>
                     </div>
                 </div>
-                <div class="card-footer bg-white border-0 pb-3 text-center">
-                    <a href="{% url 'detalle_curso' curso.id %}" class="btn btn-outline-primary w-100 shadow-sm fw-semibold">
-                        Ver detalles del curso
-                    </a>
+                
+                <div class="card-footer bg-white border-0 pb-3">
+                    <div class="d-grid">
+                        <a href="{% url 'detalle_curso' curso.id %}" class="btn btn-outline-primary btn-sm rounded-pill py-2">
+                            <i class="fas fa-eye me-1"></i> Ver detalles
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
         {% empty %}
-        <div class="col-md-8 text-center py-5">
-            <div class="card bg-light border-0 py-5 shadow-sm">
-                <div class="card-body">
-                    <i class="bi bi-search text-muted mb-3" style="font-size: 3rem;"></i>
-                    <h4 class="text-muted">No encontramos cursos que coincidan</h4>
-                    <p class="text-secondary">Intenta con otra palabra clave o limpia el filtro.</p>
-                    <a href="{% url 'home' %}" class="btn btn-primary mt-2">Ver todo el catálogo</a>
-                </div>
-            </div>
+        <div class="col-12 text-center py-5">
+            <p class="text-muted">No hay cursos registrados.</p>
         </div>
-        {% endfor %}
-    </div>
+        {% endfor %} </div>
 </div>
 
 <style>
-    .transition-hover:hover {
-        transform: translateY(-8px);
-        transition: transform 0.3s ease;
-        box-shadow: 0 12px 24px rgba(0,0,0,0.12) !important;
-    }
+    .card-custom { transition: all 0.3s ease; }
+    .card-custom:hover { transform: translateY(-5px); box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15)!important; }
 </style>
 {% endblock %}

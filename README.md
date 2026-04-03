@@ -74,17 +74,15 @@ Sigue estos pasos para replicar el entorno de desarrollo:
     ```bash
     python manage.py runserver
     ```
-    Accede a `http://127.0.0.1:8000/` para el dashboard o a `/admin`
+    Accede a `http://127.0.0.1:8000/` para el dashboard.
 
-## 🌐 Demo en Vivo (Próximamente)
+## 🌐 Demo en Vivo
 
+* https://inosencioperez.pythonanywhere.com/accounts/login/
 
-* El sistema será desplegado en PythonAnywhere.
+  Usuario: invitado
 
-* Estado: En proceso de despliegue.
-
-* Usuario Invitado (Reclutadores): invitado (Próximamente disponible).
-
+  Contraseña: NuevaAlianza2026
 
 ---
 Desarrollado con ❤️ por **Inosencio** - 2026

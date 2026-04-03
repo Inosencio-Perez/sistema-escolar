@@ -1,44 +1,67 @@
 {% extends 'base.html' %}
 
-{% block title %}Listado de Alumnos{% endblock %}
+{% block title %}Lista de Alumnos{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold mb-0">Gestión de Alumnos</h2>
-    <a href="{% url 'home' %}" class="btn btn-outline-secondary rounded-pill px-3">
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+    <h2 class="fw-bold text-dark mb-0">
+        <i class="fas fa-user-graduate text-primary me-2"></i>Gestión de Alumnos
+    </h2>
+    
+    <a href="{% url 'home' %}" class="btn btn-outline-primary shadow-sm">
         <i class="fas fa-arrow-left me-1"></i> Volver al Dashboard
     </a>
 </div>
 
-<div class="card shadow border-0">
-    <div class="card-header bg-white py-3">
-        <h5 class="mb-0 fw-bold text-primary"><i class="fas fa-user-graduate me-2"></i>Estudiantes Registrados</h5>
-    </div>
+<div class="card border-0 shadow-sm">
     <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th class="ps-4">Apellido y Nombre</th>
+                        <th class="ps-4">Nombre Completo</th>
+                        <th>DNI</th>
                         <th>Email</th>
-                        <th class="text-center">Cursos</th>
+                        <th>Curso</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for alumno in alumnos %}
                     <tr>
-                        <td class="ps-4"><strong>{{ alumno.apellido }}, {{ alumno.nombre }}</strong></td>
+                        <td class="ps-4">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle me-3 bg-primary text-white d-flex align-items-center justify-content-center rounded-circle" style="width: 35px; height: 35px; font-size: 0.8rem; flex-shrink: 0;">
+                                    {{ alumno.nombre|first }}{{ alumno.apellido|first }}
+                                </div>
+                                <div>
+                                    <span class="d-block fw-semibold text-nowrap">{{ alumno.nombre }} {{ alumno.apellido }}</span>
+                                    <small class="text-muted text-nowrap">ID: #{{ alumno.id }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge bg-light text-dark border">{{ alumno.dni }}</span></td>
                         <td>{{ alumno.email }}</td>
-                        <td class="text-center">
-                            <span class="badge bg-primary rounded-pill">{{ alumno.cursos.count }}</span>
+                        <td>
+                            <span class="badge bg-info text-dark">
+                                {{ alumno.curso.nombre|default:"Sin Curso" }}
+                            </span>
                         </td>
                     </tr>
                     {% empty %}
-                    <tr><td colspan="3" class="text-center py-5 text-muted">No hay alumnos en la base de datos.</td></tr>
+                    <tr>
+                        <td colspan="4" class="text-center py-5">
+                            <i class="fas fa-users-slash fa-3x text-muted mb-3 d-block"></i>
+                            <p class="text-muted">No se encontraron alumnos registrados.</p>
+                        </td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
+</div>
+
+<div class="mt-3 text-muted">
+    <small>Mostrando <strong>{{ alumnos.count }}</strong> alumnos en total.</small>
 </div>
 {% endblock %}

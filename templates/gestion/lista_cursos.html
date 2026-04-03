@@ -3,26 +3,45 @@
 {% block title %}Lista de Cursos{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold mb-0">Oferta Académica</h2>
-    <a href="{% url 'home' %}" class="btn btn-outline-secondary rounded-pill px-3">
-        <i class="fas fa-undo me-1"></i> Volver al Dashboard
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+    <h2 class="fw-bold text-dark mb-0">
+        <i class="fas fa-book text-primary me-2"></i>Oferta Académica
+    </h2>
+    <a href="{% url 'home' %}" class="btn btn-outline-primary shadow-sm">
+        <i class="fas fa-arrow-left me-1"></i> Volver al Dashboard
     </a>
 </div>
 
-<div class="row">
-    {% for curso in cursos %}
-    <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm border-0 border-top border-primary border-4">
-            <div class="card-body">
-                <h5 class="fw-bold">{{ curso.nombre }}</h5>
-                <p class="small text-muted mb-3"><i class="fas fa-user-tie me-1"></i> {{ curso.profesor }}</p>
-                <div class="d-grid">
-                    <a href="{% url 'detalle_curso' curso.id %}" class="btn btn-sm btn-outline-primary rounded-pill">Ver detalles</a>
-                </div>
-            </div>
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Nombre del Curso</th>
+                        <th>Descripción</th>
+                        <th class="text-end pe-4">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for curso in cursos %}
+                    <tr>
+                        <td class="ps-4 fw-bold text-primary">{{ curso.nombre }}</td>
+                        <td>{{ curso.descripcion|truncatechars:50 }}</td>
+                        <td class="text-end pe-4">
+                            <a href="{% url 'detalle_curso' curso.id %}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-users me-1"></i> Ver Alumnos
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="text-center py-5 text-muted">No hay cursos disponibles.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
-    {% endfor %}
 </div>
 {% endblock %}

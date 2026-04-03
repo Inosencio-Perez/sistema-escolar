@@ -22,7 +22,7 @@
                         <th class="ps-4">Nombre Completo</th>
                         <th>DNI</th>
                         <th>Email</th>
-                        <th>Curso</th>
+                        <th>Cursos Activos</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -42,9 +42,19 @@
                         <td><span class="badge bg-light text-dark border">{{ alumno.dni }}</span></td>
                         <td>{{ alumno.email }}</td>
                         <td>
-                            <span class="badge bg-info text-dark">
-                                {{ alumno.curso.nombre|default:"Sin Curso" }}
-                            </span>
+                            <div class="d-flex flex-wrap gap-1">
+                                {% if alumno.cursos.all %}
+                                    {% for curso in alumno.cursos.all %}
+                                        <span class="badge bg-info text-dark border-0 shadow-sm" style="font-weight: 500;">
+                                            <i class="fas fa-book-open me-1 small"></i>{{ curso.nombre }}
+                                        </span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="badge bg-light text-muted border">
+                                        Sin Curso
+                                    </span>
+                                {% endif %}
+                            </div>
                         </td>
                     </tr>
                     {% empty %}
@@ -61,7 +71,8 @@
     </div>
 </div>
 
-<div class="mt-3 text-muted">
+<div class="mt-3 text-muted d-flex justify-content-between align-items-center">
     <small>Mostrando <strong>{{ alumnos.count }}</strong> alumnos en total.</small>
+    <small class="text-primary fw-bold">Actualizado en tiempo real <i class="fas fa-sync-alt fa-spin ms-1"></i></small>
 </div>
 {% endblock %}
